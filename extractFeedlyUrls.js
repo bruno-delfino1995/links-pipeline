@@ -52,6 +52,7 @@ const removeTrackingParams = R.map(R.map(R.compose(
 )))
 
 const main = data => R.compose(
+    R.map(href => ({href, tags: ''})),
     R.flatten(),
     removeTrackingParams,
     getContentUrls,
@@ -64,4 +65,4 @@ const main = data => R.compose(
 
 readAll()
 	.then(main)
-	.then(data => console.log(data))
+	.then(data => console.log(JSON.stringify(data)))

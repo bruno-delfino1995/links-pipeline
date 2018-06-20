@@ -24,4 +24,4 @@ const main = data => R.compose(
 
 readAll()
 	.then(main)
-	.then(data => console.log(data))
+	.then(data => console.log(JSON.stringify(data)))

@@ -9,7 +9,8 @@ const normalizeTags = (link) => {
 	const tags = R.compose(
 		R.reject(R.isEmpty),
 		R.split(','),
-		R.toLower
+		R.toLower,
+		R.defaultTo('')
 	)(rawTags)
 	return R.set(tagsLens, tags, link)
 }
@@ -18,4 +19,4 @@ const main = (data) => R.map(normalizeTags)(JSON.parse(data))
 
 readAll()
 	.then(main)
-	.then(data => console.log(data))
+	.then(data => console.log(JSON.stringify(data)))
