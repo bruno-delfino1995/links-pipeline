@@ -22,7 +22,7 @@ const handleProxy = (url) => {
 }
 
 // TODO: Create an until logic, and somehow limit the amount of created promises
-const urlsToBeResolved = R.compose(
+const main = data => R.compose(
 	R.map(R.when(
 		R.compose(isProxy, parseUrl, R.view(hrefLens)),
 		async (link) => {
@@ -31,20 +31,10 @@ const urlsToBeResolved = R.compose(
 			return R.set(hrefLens, newHref, link)
 		}
 	))
-)(links)
+)(JSON.parse(data))
 
-Promise.all(urlsToBeResolved)
-	.then((urls) => {
-		return new Promise((res, rej) => {
-			fs.writeFile("./contents.json", JSON.stringify(urls, null, 2), (err) => {
-			    if (err) {
-				console.error(err);
-				rej(err)
-				return;
-			    };
-			    console.log("File has been created");
-			    res(urls)
-			});
-		});
-	});
+readAll()
+	.then(main)
+	.then(Promise.all)
+	.then(data => console.log(data))
 

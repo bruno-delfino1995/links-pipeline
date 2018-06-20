@@ -1,8 +1,7 @@
-const fs = require('fs')
 const R = require('ramda')
 const urlParse = require('url-parse')
 const queryString = require('query-string')
-const requests = require('./read-it-later.feed')
+const readAll = require('./readAll')
 
 const getLog = R.prop('log')
 const getEntries = R.prop('entries')
@@ -52,7 +51,7 @@ const removeTrackingParams = R.map(R.map(R.compose(
     urlParse
 )))
 
-const urls = R.compose(
+const main = data => R.compose(
     R.flatten(),
     removeTrackingParams,
     getContentUrls,
@@ -61,12 +60,8 @@ const urls = R.compose(
     filterContentUrls,
     getEntries,
     getLog
-)(requests)
+)(JSON.parse(data))
 
-fs.writeFile("./contents.json", JSON.stringify(urls, null, 2), (err) => {
-    if (err) {
-        console.error(err);
-        return;
-    };
-    console.log("File has been created");
-});
+readAll()
+	.then(main)
+	.then(data => console.log(data))
