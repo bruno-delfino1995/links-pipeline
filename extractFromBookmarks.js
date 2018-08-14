@@ -35,7 +35,7 @@ const main = (data) => {
 	}, toArray($, sessions)))
 
 	const links = R.compose(
-		R.map(({path, href}) => ({href, tags: R.join(',', path)})),
+		R.map(({path, href}) => ({href, tags: R.join('⨝', path)})),
 		R.reject(R.compose(
 			R.any(R.identity),
 			R.ap(R.map(R.contains, ['Amdocs', 'PC', 'Jean'])),

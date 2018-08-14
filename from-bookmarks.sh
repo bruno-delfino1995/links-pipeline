@@ -5,7 +5,7 @@ CWD=`pwd`
 FILE=$1
 
 cd "$DIR"
-cat "$CWD/$FILE" \
+cat "$FILE" \
 	| node extractFromBookmarks.js \
 	| node cleanLinks.js \
 	| node normalizeTags.js

@@ -8,7 +8,7 @@ const normalizeTags = (link) => {
 	const rawTags = R.view(tagsLens, link)
 	const tags = R.compose(
 		R.reject(R.isEmpty),
-		R.split(','),
+		R.split('⨝'),
 		R.toLower,
 		R.defaultTo('')
 	)(rawTags)
