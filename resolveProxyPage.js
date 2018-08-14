@@ -1,7 +1,9 @@
 const fs = require('fs')
 const R = require('ramda')
+const Promise = require('bluebird')
+const { TaskQueue } = require('cwait')
 const urlParse = require('url-parse')
-const links = require('./links.json')
+const readAll = require('./readAll')
 const resolveProxy = require('./resolveProxy')
 
 const hrefLens = R.lensProp('href')
@@ -13,28 +15,21 @@ const parseUrl = href => urlParse(href, true)
 
 const isProxy = url => R.startsWith('feedproxy.google.com', url.hostname)
 
-const handleProxy = (url) => {
-	console.log('Resolving URL')
-	
-	return resolveProxy(url)
-		.catch(err => url)
-		.then(newUrl => { console.log('Resolved URL'); return newUrl })
+const resolve = async (link) => {
+	const newHref = await R.compose(resolveProxy, R.view(hrefLens))(link)
+
+	return R.set(hrefLens, newHref, link)
 }
 
-// TODO: Create an until logic, and somehow limit the amount of created promises
-const main = data => R.compose(
-	R.map(R.when(
-		R.compose(isProxy, parseUrl, R.view(hrefLens)),
-		async (link) => {
-			const newHref = await R.compose(handleProxy, R.view(hrefLens))(link)
+const resolveIfNecessary = R.when(
+	R.compose(isProxy, parseUrl, R.view(hrefLens)),
+	resolve
+)
 
-			return R.set(hrefLens, newHref, link)
-		}
-	))
-)(JSON.parse(data))
+const queue = new TaskQueue(Promise, 5)
 
 readAll()
-	.then(main)
-	.then(Promise.all)
+	.then(data => JSON.parse(data))
+	.then((proxied) => Promise.map(proxied, queue.wrap(resolveIfNecessary)))
 	.then(data => console.log(JSON.stringify(data)))
 
