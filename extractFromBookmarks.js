@@ -22,7 +22,7 @@ const extractBookmarks = $ => dom => {
 	const folderTitles = R.reverse(R.map(el => el.text(), [...toArray($, getFolder(dom)), ...folders]))
 
 	const titles = R.without(['Bookmarks bar'], R.reject(R.isEmpty, folderTitles))
-	const path = R.reject(t => /window \d/i.test(t), titles)
+	const path = R.reject(t => /window \d|new folder/i.test(t), titles)
 
 	const elements = toArray($, dom.find('> dt > a'))
 	const links = getHrefs(elements)

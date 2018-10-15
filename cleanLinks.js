@@ -18,10 +18,9 @@ const removeUselessSites = (url) => {
 	)
 }
 
-const main = data => R.compose(
-	R.reject(R.compose(removeUselessSites, parseUrl, R.view(hrefLens)))
-)(JSON.parse(data))
+const main = R.reject(R.compose(removeUselessSites, parseUrl, R.view(hrefLens)))
 
 readAll()
+	.then(data => JSON.parse(data))
 	.then(main)
 	.then(data => console.log(JSON.stringify(data)))
