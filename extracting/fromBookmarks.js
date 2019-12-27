@@ -38,11 +38,11 @@ const main = data => {
   const bookmarks = R.compose(R.flatten, R.map(extractBookmarks($)))(sessions);
 
   const links = R.map(({ path, ...rest }) => ({
-    tags: R.join("⨝", path),
+    tags: path,
     ...rest
   }))(bookmarks);
 
   return links;
 };
 
-pipe(main);
+pipe(main)();

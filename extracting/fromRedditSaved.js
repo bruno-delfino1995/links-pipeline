@@ -63,17 +63,16 @@ const fetch = () => chain(retrieve, link)().then(R.view(R.lensIndex(0)));
 const process = R.map(
   R.compose(
     R.when(R.propEq("kind", "t3"), post => ({
-      type: "com.reddit#post",
+      kind: "com.reddit#post",
       title: post.data.title,
-      subreddit: post.data.subreddit,
-      permalink: `https://reddit.com${post.data.permalink}`,
-      url: post.data.url
+      tags: [post.data.subreddit],
+      permalink: `https://reddit.com${post.data.permalink}`
     })),
     R.when(R.propEq("kind", "t1"), comment => ({
-      type: "com.reddit#comment",
-      body: comment.data.body,
-      subreddit: comment.data.subreddit,
-      permaling: `https://reddit.com${comment.data.permalink}`
+      kind: "com.reddit#comment",
+      title: comment.data.body,
+      tags: [comment.data.subreddit],
+      permalink: `https://reddit.com${comment.data.permalink}`
     }))
   )
 );
@@ -101,4 +100,4 @@ const main = () =>
       return data;
     });
 
-pipe(main, null, { noInput: true });
+pipe(main, null, { noInput: true })();

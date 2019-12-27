@@ -10,11 +10,11 @@ const removeUselessSites = url => {
   const hostname = url.hostname;
 
   return (
-    R.startsWith("messenger.com", hostname) ||
-    R.startsWith("translate.google.com", hostname) ||
-    R.startsWith("rally1.rallydev.com", hostname) ||
-    R.startsWith("web.whatsapp.com", hostname) ||
-    R.startsWith("web.telegram.org", hostname)
+    R.includes("messenger.com", hostname) ||
+    R.includes("translate.google.com", hostname) ||
+    R.includes("rally1.rallydev.com", hostname) ||
+    R.includes("web.whatsapp.com", hostname) ||
+    R.includes("web.telegram.org", hostname)
   );
 };
 
@@ -22,4 +22,4 @@ const main = R.reject(
   R.compose(removeUselessSites, parseUrl, R.view(hrefLens))
 );
 
-pipe(main, { input: JSON.parse });
+pipe(main, { input: JSON.parse })();

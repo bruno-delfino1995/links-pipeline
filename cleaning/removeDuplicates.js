@@ -12,10 +12,7 @@ const mergeTags = comparator =>
         el.href,
         R.set(
           tagsLens,
-          `${R.defaultTo(
-            "",
-            R.unless(R.isNil, t => `${t}⨝`, acc.tags)
-          )}${el.tags}`,
+          R.uniq(R.concat(acc.tags || [], el.tags || [])),
           R.mergeLeft(acc, el)
         )
       ),
