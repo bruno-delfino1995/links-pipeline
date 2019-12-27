@@ -1,6 +1,6 @@
 const R = require("ramda");
 const urlParse = require("url-parse");
-const readAll = require("./readAll");
+const { pipe } = require("../helpers/io");
 
 const hrefLens = R.lensProp("href");
 
@@ -22,7 +22,4 @@ const main = R.reject(
   R.compose(removeUselessSites, parseUrl, R.view(hrefLens))
 );
 
-readAll()
-  .then(data => JSON.parse(data))
-  .then(main)
-  .then(data => console.log(JSON.stringify(data)));
+pipe(main, { input: JSON.parse });

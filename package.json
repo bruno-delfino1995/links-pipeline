@@ -7,7 +7,7 @@
     "fs": "0.0.1-security",
     "puppeteer": "^1.20.0",
     "query-string": "^6.1.0",
-    "ramda": "^0.25.0",
+    "ramda": "^0.26.1",
     "url-parse": "^1.4.3"
   }
 }

@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-module.exports.write = ({ path, contents }) =>
+const write = ({ path, contents }) =>
   new Promise((res, rej) => {
     fs.writeFile(path, contents, err => {
       if (err) {
@@ -12,7 +12,7 @@ module.exports.write = ({ path, contents }) =>
     });
   });
 
-module.exports.read = ({ path, encoding }) =>
+const read = ({ path, encoding }) =>
   new Promise((res, rej) => {
     fs.readFile(path, encoding, (err, data) => {
       if (err) {
@@ -23,3 +23,8 @@ module.exports.read = ({ path, encoding }) =>
       res(data);
     });
   });
+
+module.exports = {
+  write,
+  read
+};

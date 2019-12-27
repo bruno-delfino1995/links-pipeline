@@ -2,6 +2,7 @@ const R = require("ramda");
 const qs = require("query-string");
 const Promise = require("bluebird");
 const axios = require("axios");
+const { pipe } = require("../helpers/io");
 
 const token = "<YOUR_TOKEN>";
 const username = "<YOUR_USERNAME>";
@@ -100,6 +101,4 @@ const main = () =>
       return data;
     });
 
-main()
-  .then(data => console.log(JSON.stringify(data)))
-  .catch(err => console.error(JSON.stringify(err)));
+pipe(main, null, { noInput: true });

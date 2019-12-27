@@ -1,6 +1,6 @@
 const cheerio = require("cheerio");
 const R = require("ramda");
-const readAll = require("./readAll");
+const { pipe } = require("../helpers/io");
 
 const getEntry = R.map(el => ({ href: el.attr("href"), title: el.text() }));
 const getFolder = el => el.prev("dt > h3");
@@ -23,11 +23,7 @@ const extractBookmarks = $ => dom => {
     R.map(el => el.text(), [...toArray($, getFolder(dom)), ...folders])
   );
 
-  const titles = R.without(
-    ["Bookmarks bar"],
-    R.reject(R.isEmpty, folderTitles)
-  );
-  const path = R.reject(t => /window \d|new folder/i.test(t), titles);
+  const path = R.reject(R.isEmpty, folderTitles);
 
   const elements = toArray($, dom.find("> dt > a"));
   const entries = getEntry(elements);
@@ -49,6 +45,4 @@ const main = data => {
   return links;
 };
 
-readAll()
-  .then(main)
-  .then(data => console.log(JSON.stringify(data)));
+pipe(main);

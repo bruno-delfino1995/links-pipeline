@@ -1,4 +1,4 @@
-(function(scope) {
+const scroller = function(scope) {
   const body = document.body;
   const timerInterval = 1500;
 
@@ -29,4 +29,8 @@
   };
 
   scope.scroller = infinityScroller;
-})(this);
+};
+
+module.exports = {
+  scroller
+};
