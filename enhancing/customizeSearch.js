@@ -7,9 +7,9 @@ const hrefLens = R.lensProp("href");
 
 const isSearch = R.compose(R.equals("#search"), R.view(kindLens));
 
-const googlePredicate = R.compose(
+const googlePredicate = R.propSatisfies(
   matchDomain(/(www\.)?google\.com\..*/),
-  R.prop("href")
+  "href"
 );
 
 const googleTransformer = link => {

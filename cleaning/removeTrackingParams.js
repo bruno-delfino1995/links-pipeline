@@ -2,6 +2,7 @@ const R = require("ramda");
 const urlParse = require("url-parse");
 const qs = require("query-string");
 const { pipe } = require("../helpers/io");
+const { keyFilter } = require("../helpers/object");
 
 const hrefLens = R.lensProp("href");
 
@@ -13,9 +14,7 @@ const isTrackingParam = name =>
 
 const removeUTMFromQuery = R.compose(
   qs.stringify,
-  R.fromPairs,
-  R.chain(([k, v]) => (isTrackingParam(k) ? [] : [[k, v]])),
-  R.toPairs,
+  keyFilter(R.complement(isTrackingParam)),
   qs.parse
 );
 

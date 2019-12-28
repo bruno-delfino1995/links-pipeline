@@ -1,5 +1,9 @@
 {
+  "scripts": {
+    "start": "./execute.sh ~/links.json cleaning/removeByDomain.js cleaning/removeTrackingParams.js cleaning/removeDuplicates.js cleaning/resolveMoves.js cleaning/resolveAMPProject.js enhancing/addKind.js enhancing/customizeSearch.js enhancing/augmentSites.js > ~/links-processed.json"
+  },
   "dependencies": {
+    "@postlight/mercury-parser": "^2.2.0",
     "axios": "^0.19.0",
     "bluebird": "^3.5.1",
     "cheerio": "^1.0.0-rc.2",

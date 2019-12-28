@@ -9,11 +9,6 @@ const hrefLens = R.lensProp("href");
 
 const parseUrl = href => urlParse(href, true);
 
-const isProxy = R.compose(
-  R.includes("feedproxy.google.com"),
-  R.prop("hostname")
-);
-
 const resolveProxy = async href => {
   const locationLens = R.lensPath(["headers", "location"]);
   const statusLens = R.lensProp("status");
@@ -34,12 +29,7 @@ const resolve = async link => {
   return R.set(hrefLens, newHref, link);
 };
 
-const resolveIfNecessary = R.when(
-  R.compose(isProxy, parseUrl, R.view(hrefLens)),
-  resolve
-);
-
 const queue = new TaskQueue(Promise, 5);
-const main = d => Promise.map(d, queue.wrap(resolveIfNecessary));
+const main = d => Promise.map(d, queue.wrap(resolve));
 
 pipe(main, { input: JSON.parse })();
