@@ -10,7 +10,7 @@ const getKind = R.cond([
   [matchDomain(/youtube\.com/), R.always("#video")],
   [matchDomain(/reddit\.com/), R.always("com.reddit#post")],
   [matchDomain(/github\.com/), R.always("com.github#repository")],
-  [(R.T, R.always("#site"))]
+  [R.T, R.always("#site")]
 ]);
 
 const main = R.map(link =>

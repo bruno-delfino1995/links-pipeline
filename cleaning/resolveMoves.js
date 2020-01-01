@@ -20,7 +20,8 @@ const resolveProxy = async href => {
         R.view(locationLens),
         R.always(href)
       )
-    );
+    )
+    .catch(R.always(href));
 };
 
 const resolve = async link => {

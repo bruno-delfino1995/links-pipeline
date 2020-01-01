@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "./execute.sh ~/links.json cleaning/removeByDomain.js cleaning/removeTrackingParams.js cleaning/removeDuplicates.js cleaning/resolveMoves.js cleaning/resolveAMPProject.js enhancing/addKind.js enhancing/customizeSearch.js enhancing/augmentSites.js > ~/links-processed.json"
+    "start": "./execute.sh ~/links.json cleaning/removeByDomain.js cleaning/removeTrackingParams.js cleaning/removeDuplicates.js cleaning/resolveMoves.js cleaning/resolveAMPProject.js enhancing/addKind.js enhancing/customizeSearch.js enhancing/resolveSiteTitle.js > ~/links-processed.json"
   },
   "dependencies": {
     "@postlight/mercury-parser": "^2.2.0",
