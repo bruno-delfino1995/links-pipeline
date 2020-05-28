@@ -1,16 +1,37 @@
 {
+  "name": "links-pipeline",
+  "description": "Collection of scripts to help managing saved links",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "index.js",
+  "bin": {
+    "links-from": "./bin/run"
+  },
+  "files": [
+    "/bin",
+    "/src"
+  ],
   "scripts": {
-    "start": "./execute.sh ~/links.json cleaning/removeByDomain.js cleaning/removeTrackingParams.js cleaning/removeDuplicates.js cleaning/resolveMoves.js cleaning/resolveAMPProject.js enhancing/addKind.js enhancing/customizeSearch.js enhancing/resolveSiteTitle.js > ~/links-processed.json"
+    "start": "node index.js"
   },
   "dependencies": {
     "@postlight/mercury-parser": "^2.2.0",
     "axios": "^0.19.0",
     "bluebird": "^3.5.1",
-    "cheerio": "^1.0.0-rc.2",
+    "cheerio": "^1.0.0-rc.3",
     "cwait": "^1.1.1",
-    "fs": "0.0.1-security",
     "query-string": "^6.1.0",
     "ramda": "^0.26.1",
-    "url-parse": "^1.4.3"
+    "rxjs": "^6.5.5",
+    "url-parse": "^1.4.3",
+    "yargs": "^15.3.1"
+  },
+  "engines": {
+    "node": "^12.16.0",
+    "npm": "^6.14.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bruno-delfino1995/links-pipeline.git"
   }
 }
