@@ -16,6 +16,7 @@ const getKind = R.cond([
 const main = link => R.over(
   kindLens,
   R.when(R.isNil, () => getKind(R.view(hrefLens, link))),
+  link
 )
 
 module.exports = [Rxo.map(main)]

@@ -5,7 +5,7 @@ const cheerio = require('cheerio');
 
 const fromFile = require('./fromFile')
 
-const getEntry = R.map(el => ({ href: el.attr('href'), title: el.text() }));
+const getEntry = R.map(el => ({ href: el.attr('href'), title: el.text(), tags: el.attr('tags') }));
 const getFolder = el => el.prev('dt > h3');
 
 const toArray = ($, list) => {
@@ -41,8 +41,11 @@ const main = path => fromFile(path)
     const sessions = toArray($, $('dl'));
     const bookmarks = R.compose(R.flatten, R.map(extractBookmarks($)))(sessions);
 
-    const links = R.map(({ path, ...rest }) => ({
-      tags: path,
+    const links = R.map(({ path, tags, ...rest }) => ({
+      tags: R.reject(
+        R.anyPass([R.isNil, R.isEmpty]),
+        R.concat(path || [], R.split(',', tags || ''))
+      ),
       ...rest
     }))(bookmarks);
 

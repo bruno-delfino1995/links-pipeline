@@ -2,7 +2,7 @@ const yargs = require('yargs')
 
 const pkg = require('./package.json')
 
-const toLog = o => o.subscribe(console.log)
+const toLog = o => o.subscribe(el => console.log(JSON.stringify(el)))
 const asCLICommand = (pipeline) => ({
   ...pipeline,
   handler: (argv) => toLog(pipeline.handler(argv))
