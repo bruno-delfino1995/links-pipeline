@@ -9,7 +9,7 @@ const scroller = function(scope) {
     window.scrollTo(0, current);
   };
 
-  const infinityScroller = {
+  const infiniteScroller = {
     timer: null,
     stopped: false,
 
@@ -28,7 +28,7 @@ const scroller = function(scope) {
     }
   };
 
-  scope.scroller = infinityScroller;
+  scope.scroller = infiniteScroller;
 };
 
 module.exports = {
