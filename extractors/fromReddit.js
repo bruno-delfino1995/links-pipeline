@@ -77,22 +77,20 @@ const process = R.map(
 const unsave = user => data =>
   Promise.map(data, el => {
     const id = el.data.name;
-    // return axios
-    //   .post('https://oauth.reddit.com/api/unsave', qs.stringify({ id }), {
-    //     headers: {
-    //       'Content-Type': 'application/x-www-form-urlencoded',
-    //       Authorization: `bearer ${user.token}`,
-    //       'User-Agent': user.username
-    //     }
-    //   })
-    return Promise.resolve(el.data.name)
-      .then(() => `Successfully deleted ${id}`)
-      .catch(err => `Unsucessfully deleted ${id}: ${JSON.stringify(err)}`);
+    return axios
+      .post('https://oauth.reddit.com/api/unsave', qs.stringify({ id }), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `bearer ${user.token}`,
+          'User-Agent': user.username
+        }
+      })
+      .catch(err => console.log(`Unsucessfully deleted ${id}: ${JSON.stringify(err)}`));
   });
 
-const main = ({ username, token, unsave }) => Rx.from(
+const main = ({ username, token, unsave: del }) => Rx.from(
   fetch({ username, token })
-    .then(data => Promise.all(unsave
+    .then(data => Promise.all(del
         ? [process(data), unsave({ username, token })(data)]
         : [process(data)]
     ))
