@@ -11,6 +11,7 @@ const asCLICommand = (pipeline) => ({
 yargs
   .command(asCLICommand(require('./pipelines/bookmarks')))
   .command(asCLICommand(require('./pipelines/reddit')))
+  .command(asCLICommand(require('./pipelines/json')))
   .scriptName('links-from')
   .version(`${pkg.name} ${pkg.version}`)
   .demandCommand()
