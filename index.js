@@ -12,6 +12,7 @@ yargs
   .command(asCLICommand(require('./pipelines/bookmarks')))
   .command(asCLICommand(require('./pipelines/reddit')))
   .command(asCLICommand(require('./pipelines/json')))
+  .command(asCLICommand(require('./pipelines/normalize')))
   .scriptName('links-from')
   .version(`${pkg.name} ${pkg.version}`)
   .demandCommand()
