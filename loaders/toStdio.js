@@ -1,5 +1,5 @@
 const main = observable => observable.subscribe({
-  next: evt => console.log(evt),
+  next: evt => console.log(JSON.stringify(evt)),
   error: err => console.error(err),
 });
 

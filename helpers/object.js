@@ -5,7 +5,7 @@ const keyFilter = R.curry((f, obj) =>
     R.fromPairs,
     R.chain(([k, v]) => (f(k) ? [[k, v]] : [])),
     R.toPairs
-  )
+  )(obj)
 );
 
 module.exports = {
