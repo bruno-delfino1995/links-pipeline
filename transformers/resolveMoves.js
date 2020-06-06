@@ -3,7 +3,6 @@ const Rxo = require('rxjs/operators')
 const axios = require('axios');
 const Promise = require('bluebird');
 const { TaskQueue } = require('cwait');
-const urlParse = require('url-parse');
 
 const hrefLens = R.lensProp('href');
 
@@ -31,4 +30,4 @@ const resolve = async link => {
 const queue = new TaskQueue(Promise, 5);
 const main = queue.wrap(resolve);
 
-module.exports = [Rxo.map(main)]
+module.exports = [Rxo.mergeMap(main)]

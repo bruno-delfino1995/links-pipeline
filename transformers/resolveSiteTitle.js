@@ -20,5 +20,4 @@ const augment = async link =>
 const queue = new TaskQueue(Promise, 5);
 const main = queue.wrap(R.when(R.allPass([isSite, R.complement(hasTitle)]), augment));
 
-// NOTE: It doesn't look to be that easy to integrate both 'rxjs' and 'cwait'
-module.exports = [Rxo.map(main)]
+module.exports = [Rxo.mergeMap(main)]
