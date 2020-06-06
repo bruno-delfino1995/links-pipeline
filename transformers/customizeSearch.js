@@ -1,15 +1,15 @@
 const R = require('ramda');
 const Rxo = require('rxjs/operators')
-const { pipe } = require('../helpers/io');
-const { matchDomain, getQuery } = require('../helpers/href');
+const { getQuery } = require('../helpers/href');
 
 const kindLens = R.lensProp('kind');
 const hrefLens = R.lensProp('href');
 
 const isSearch = R.compose(R.equals('#search'), R.view(kindLens));
 
+const googleSearch = /^(https?:\/\/)?(www\.)?google\.com(\.[^.]*?)?\/search/
 const googlePredicate = R.propSatisfies(
-  matchDomain(/(www\.)?google\.com\..*/),
+  (l) => googleSearch.test(l),
   'href'
 );
 
@@ -30,5 +30,4 @@ const customize = R.cond([
 
 const main = R.when(isSearch, customize);
 
-// module.exports = [Rxo.map(main)]
-module.exports = [Rxo.map(R.identity)]
+module.exports = [Rxo.map(main)]
