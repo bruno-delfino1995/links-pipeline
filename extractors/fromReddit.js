@@ -8,24 +8,6 @@ const axios = require('axios');
 const afterLens = R.lensPath(['data', 'after']);
 const elementsLens = R.lensPath(['data', 'children']);
 
-// FIXME: Flexible stop condition
-// chain :: (Maybe r -> Either r e) ->
-//  ([a] -> Either r e -> Either ([a], r) ([a], e)) ->
-//  r -> [a] ->
-//  Either ([a], a) ([a], b)
-const chain = (process, link) => (current, acc = []) => {
-  const currentId = R.view(afterLens, current);
-  const promise = process(current);
-
-  return link(acc, promise).then(([all, next]) => {
-    const nextId = R.view(afterLens, next);
-
-    if (!nextId || nextId == currentId) return [all, next];
-
-    return chain(process, link)(next, all);
-  });
-};
-
 // link :: [a] -> Either r e -> Either ([a], r) ([a], e)
 const link = (acc, promise) => {
   return promise
@@ -38,63 +20,75 @@ const link = (acc, promise) => {
     });
 };
 
-// retrieve :: Maybe r -> Either r e
-const retrieve = user => previous => {
-  const after = R.view(afterLens, previous);
+const convert = R.cond([
+  [R.propEq('kind', 't3'), post => ({
+    kind: 'com.reddit#post',
+    title: post.data.title,
+    tags: [post.data.subreddit],
+    href: `https://reddit.com${post.data.permalink}`
+  })],
+  [R.propEq('kind', 't1'), comment => ({
+    kind: 'com.reddit#comment',
+    title: comment.data.body,
+    tags: [comment.data.subreddit],
+    href: `https://reddit.com${comment.data.permalink}`
+  })],
+  [R.T, R.identity]
+])
 
-  return axios
-    .get(`https://oauth.reddit.com/user/${user.username}/saved`, {
-      params: {
-        after
-      },
-      headers: {
-        Authorization: `bearer ${user.token}`,
-        'User-Agent': user.username
-      }
-    })
-    .then(R.prop('data'));
-};
+const fetch = user => {
+  const fetcher = (previous = null) => {
+    const after = R.view(afterLens, previous);
 
-const fetch = user => chain(retrieve(user), link)().then(R.view(R.lensIndex(0)));
+    if (R.isNil(after) && !R.isNil(previous)) {
+      return Rx.EMPTY
+    }
 
-const process = R.map(
-  R.compose(
-    R.when(R.propEq('kind', 't3'), post => ({
-      kind: 'com.reddit#post',
-      title: post.data.title,
-      tags: [post.data.subreddit],
-      href: `https://reddit.com${post.data.permalink}`
-    })),
-    R.when(R.propEq('kind', 't1'), comment => ({
-      kind: 'com.reddit#comment',
-      title: comment.data.body,
-      tags: [comment.data.subreddit],
-      href: `https://reddit.com${comment.data.permalink}`
-    }))
-  )
-);
-
-const unsave = user => data =>
-  Promise.map(data, el => {
-    const id = el.data.name;
-    return axios
-      .post('https://oauth.reddit.com/api/unsave', qs.stringify({ id }), {
+    const promise = axios
+      .get(`https://oauth.reddit.com/user/${user.username}/saved`, {
+        params: {
+          after
+        },
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
           Authorization: `bearer ${user.token}`,
           'User-Agent': user.username
         }
       })
-      .catch(err => console.log(`Unsucessfully deleted ${id}: ${JSON.stringify(err)}`));
-  });
+      .then(R.prop('data'))
 
-const main = ({ username, token, unsave: del }) => Rx.from(
-  fetch({ username, token })
-    .then(data => Promise.all(del
-        ? [process(data), unsave({ username, token })(data)]
-        : [process(data)]
-    ))
-    .then(([data]) => data)
-).pipe(Rxo.mergeMap(data => Rx.from(data)))
+    return Rx.from(promise)
+            .pipe(Rxo.expand(fetcher));
+  }
+
+  return fetcher
+};
+
+const unsave = user => el => {
+  const id = el.data.name;
+
+  return axios
+    .post('https://oauth.reddit.com/api/unsave', qs.stringify({ id }), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `bearer ${user.token}`,
+        'User-Agent': user.username
+      }
+    })
+    .then(() => el)
+    .catch(() => { throw new Error(`Failed to unsave ${id}`)})
+}
+
+const main = ({ username, token, unsave: del }) => {
+  const user = { username, token }
+  const fetcher = fetch(user)
+  const unsaver = del ? unsave(user) : Promise.resolve
+
+  return Rx.from(fetcher())
+    .pipe(
+      Rxo.mergeMap(R.compose(R.defaultTo([]), R.view(elementsLens))),
+      Rxo.mergeMap(unsaver),
+      Rxo.map(convert)
+    )
+}
 
 module.exports = main

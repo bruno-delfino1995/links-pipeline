@@ -1,6 +1,8 @@
+const chalk = require('chalk')
+
 const main = observable => observable.subscribe({
   next: evt => console.log(JSON.stringify(evt)),
-  error: err => console.error(err),
+  error: err => console.error(`${chalk.red('Error:')} ${chalk.yellow(err)}`),
 });
 
 module.exports = main
