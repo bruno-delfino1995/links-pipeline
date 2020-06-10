@@ -36,31 +36,26 @@ const convert = R.cond([
   [R.T, R.identity]
 ])
 
-const fetch = user => {
-  const fetcher = (previous = null) => {
-    const after = R.view(afterLens, previous);
+const fetch = user => (previous = null) => {
+  const after = R.view(afterLens, previous);
 
-    if (R.isNil(after) && !R.isNil(previous)) {
-      return Rx.EMPTY
-    }
-
-    const promise = axios
-      .get(`https://oauth.reddit.com/user/${user.username}/saved`, {
-        params: {
-          after
-        },
-        headers: {
-          Authorization: `bearer ${user.token}`,
-          'User-Agent': user.username
-        }
-      })
-      .then(R.prop('data'))
-
-    return Rx.from(promise)
-            .pipe(Rxo.expand(fetcher));
+  if (R.isNil(after) && !R.isNil(previous)) {
+    return Rx.EMPTY
   }
 
-  return fetcher
+  const promise = axios
+        .get(`https://oauth.reddit.com/user/${user.username}/saved`, {
+          params: {
+            after
+          },
+          headers: {
+            Authorization: `bearer ${user.token}`,
+            'User-Agent': user.username
+          }
+        })
+        .then(R.prop('data'))
+
+  return Rx.from(promise)
 };
 
 const unsave = user => el => {
@@ -83,8 +78,9 @@ const main = ({ username, token, unsave: del }) => {
   const fetcher = fetch(user)
   const unsaver = del ? unsave(user) : Promise.resolve
 
-  return Rx.from(fetcher())
+  return fetcher()
     .pipe(
+      Rxo.expand(fetcher),
       Rxo.mergeMap(R.compose(R.defaultTo([]), R.view(elementsLens))),
       Rxo.mergeMap(unsaver),
       Rxo.map(convert)
