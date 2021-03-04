@@ -1,6 +1,6 @@
 const path = require('path')
 
-const fromLog = require('../extractors/fromLog')
+const fromJsonl = require('../extractors/fromJsonl')
 
 const removeByDomain = require('../transformers/removeByDomain')
 const resolveAMPProject = require('../transformers/resolveAMPProject')
@@ -12,7 +12,6 @@ const resolveMoves = require('../transformers/resolveMoves')
 
 module.exports = {
   command: 'normalize <file>',
-  aliases: '$0',
   desc: 'Normalize log file where each line is an entry',
   builder: (y) => {
     y.positional('file', {
@@ -23,7 +22,7 @@ module.exports = {
   handler: (argv) => {
     const file = path.resolve(argv.file)
 
-    return fromLog(file)
+    return fromJsonl(file)
       .pipe(...removeByDomain)
       .pipe(...resolveAMPProject)
       .pipe(...removeTrackingParams)

@@ -4,7 +4,6 @@ const fromBookmarks = require('../extractors/fromBookmarks')
 
 module.exports = {
   command: 'bookmarks <file>',
-  aliases: '$0',
   desc: 'Extract from bookmarks file',
   builder: (y) => {
     y.positional('file', {
