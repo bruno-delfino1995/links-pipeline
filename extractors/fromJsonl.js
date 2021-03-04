@@ -1,9 +1,10 @@
 const fs = require('fs')
 const Rxo = require('rxjs/operators')
+const isStream = require('is-stream')
 
 const fromStream = require('./fromStream')
 
-const fromLog = (path) => fromStream(() => fs.createReadStream(path))
+const fromLog = (path) => fromStream(() => isStream.readable(path) ? path : fs.createReadStream(path))
   .pipe(Rxo.scan(({ buffer }, b) => {
     const splitted = buffer.concat(b).split("\n");
     const rest = splitted.pop();
