@@ -5,6 +5,7 @@ const R = require('ramda')
 const fromJsonl = require('../extractors/fromJsonl')
 
 const normalizeTransformers = [
+  'cleanup',
   'removeByDomain',
   'resolveAMPProject',
   'removeTrackingParams',
