@@ -12,7 +12,7 @@ const normalizeTransformers = [
   'customizeSearch',
   'normalizeTags',
   'sort',
-  'removeDuplicates'
+  'uniq'
 ]
 
 module.exports = {
