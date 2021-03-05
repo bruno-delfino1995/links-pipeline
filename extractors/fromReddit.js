@@ -8,18 +8,6 @@ const axios = require('axios');
 const afterLens = R.lensPath(['data', 'after']);
 const elementsLens = R.lensPath(['data', 'children']);
 
-// link :: [a] -> Either r e -> Either ([a], r) ([a], e)
-const link = (acc, promise) => {
-  return promise
-    .then(data => {
-      const elements = R.defaultTo([], R.view(elementsLens, data));
-      return [R.concat(acc, elements), data];
-    })
-    .catch(err => {
-      throw [acc, err];
-    });
-};
-
 const convert = R.cond([
   [R.propEq('kind', 't3'), post => ({
     kind: 'com.reddit#post',
@@ -36,7 +24,7 @@ const convert = R.cond([
   [R.T, R.identity]
 ])
 
-const fetch = user => (previous = null) => {
+const fetch = ({ user, noAfter }) => (previous = null) => {
   const after = R.view(afterLens, previous);
 
   if (R.isNil(after) && !R.isNil(previous)) {
@@ -46,7 +34,10 @@ const fetch = user => (previous = null) => {
   const promise = axios
         .get(`https://oauth.reddit.com/user/${user.username}/saved`, {
           params: {
-            after
+						// noAfter prevents us from stabbing ourselfs in the back because of
+						// backpressure, which prevents us from using a valid `after` because it was
+						// deleted when unsaving
+            after: noAfter ? null : after,
           },
           headers: {
             Authorization: `bearer ${user.token}`,
@@ -75,7 +66,7 @@ const unsave = user => el => {
 
 const main = ({ username, token, unsave: del }) => {
   const user = { username, token }
-  const fetcher = fetch(user)
+  const fetcher = fetch({ user, noAfter: del })
   const unsaver = del ? unsave(user) : Promise.resolve
 
   return fetcher()
