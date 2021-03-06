@@ -1,47 +1,17 @@
 const R = require('ramda');
-const Rx = require('rxjs')
 const Rxo = require('rxjs/operators')
+const { bufferWhile } = require('../helpers/operators')
 const { defaults, concat, lens } = require('../helpers/link')
 
-const groupWhile = (criteria) => (source) => {
-  return (new Rx.Observable((observer) => {
-    let acc = { last: undefined, buffer: [] }
-
-    const subscription = source.subscribe({
-      error: err => observer.error(err),
-      complete: () => {
-        observer.next(acc.buffer)
-        observer.complete()
-      },
-      next: data => {
-        const { last, buffer } = acc
-
-        if (last !== undefined && !criteria(last, data)) {
-          acc = {
-            last: data,
-            buffer: [data]
-          }
-
-          observer.next(buffer)
-
-          return
-        }
-
-        acc = {
-          last: data,
-          buffer: buffer.concat([data])
-        }
-      }
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    };
-  }))
-}
+// NOTE: Group by will emit GroupedObservables while keeping an index in memory
+// module.exports = [
+//   Rxo.groupBy(R.view(lens.href)),
+//   Rxo.map(group => group.pipe(Rxo.reduce(concat, defaults))),
+//   Rxo.mergeMap(R.identity),
+// ]
 
 module.exports = [
-  groupWhile(R.compose(
+  bufferWhile(R.compose(
     R.apply(R.equals),
     R.unapply(R.map(R.view(lens.href)))
   )),
