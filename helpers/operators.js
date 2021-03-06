@@ -1,57 +1,68 @@
 const R = require('ramda');
+const Rx = require('rxjs')
 const Rxo = require('rxjs/operators')
 
+const [
+  INIT, NEXT, ERROR, COMPLETE
+] = Array(4).fill().map(() => Symbol())
+
 const bufferWhile = (criteria) => (source) => {
-  const init = Symbol()
-
   return source.pipe(
-    // NOTE: We move 2 in steps of 1 to detect completion by checking the length
-    Rxo.bufferCount(2, 1),
+    Rxo.materialize(),
     Rxo.scan(
-      ({ previous, buffer }, data) => {
-        const [fst, snd] = data
+      ({ previous, buffer }, notification) => {
+        const { type, payload } = notification.do(
+          (value) => ({ type: NEXT, payload: value }),
+          (err) => ({ type: ERROR, payload: err }),
+          () => ({ type: COMPLETE }),
+        )
 
-        if (data.length === 1) {
-          if (previous === init) {
-            return { emit: [[fst]] }
+        switch (type) {
+        case ERROR:
+          return {
+            previous,
+            buffer,
+            report: [
+              Rx.Notification.createError(payload)
+            ]
+          }
+        case COMPLETE:
+          return {
+            previous,
+            buffer: [],
+            report: [
+              Rx.Notification.createNext(buffer),
+              Rx.Notification.createComplete()
+            ]
+          }
+        case NEXT:
+          if (previous === INIT) {
+            return {
+              previous: payload,
+              buffer: [payload],
+              report: []
+            }
           }
 
-          return { emit: [buffer] }
-        }
-
-        if (previous === init) {
-          if (!criteria(fst, snd)) {
+          if (!criteria(previous, payload)) {
             return {
-              last: snd,
-              buffer: [snd],
-              emit: [[fst]],
+              previous: payload,
+              buffer: [payload],
+              report: [Rx.Notification.createNext(buffer)]
             }
           }
 
           return {
-            last: snd,
-            buffer: data,
-            emit: []
+            previous: payload,
+            buffer: buffer.concat(payload),
+            report: []
           }
-        }
-
-        if (!criteria(fst, snd)) {
-          return {
-            last: snd,
-            buffer: [snd],
-            emit: [buffer],
-          }
-        }
-
-        return {
-          last: snd,
-          buffer: buffer.concat(snd),
-          emit: []
         }
       },
-      { previous: init, buffer: [], emit: [] }
+      { previous: INIT, buffer: [], report: [] }
     ),
-    Rxo.flatMap(R.prop('emit'))
+    Rxo.flatMap(R.prop('report')),
+    Rxo.dematerialize()
   )
 }
 
