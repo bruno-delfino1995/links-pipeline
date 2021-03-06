@@ -6,17 +6,17 @@ const fromStream = (createStream) => Rx.defer(() => {
     const error = (err) => observer.error(err)
     const end = () => observer.complete()
 
-    const stream = createStream();
-    stream.addListener('data', data);
-    stream.addListener('error', error);
-    stream.addListener('end', end);
-    stream.resume();
+    const stream = createStream()
+    stream.addListener('data', data)
+    stream.addListener('error', error)
+    stream.addListener('end', end)
+    stream.resume()
 
     return () => {
-      stream.removeListener('data', data);
-      stream.removeListener('error', error);
-      stream.removeListener('end', end);
-    };
+      stream.removeListener('data', data)
+      stream.removeListener('error', error)
+      stream.removeListener('end', end)
+    }
   }))
 })
 

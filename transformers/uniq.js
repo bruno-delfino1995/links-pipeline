@@ -1,4 +1,4 @@
-const R = require('ramda');
+const R = require('ramda')
 const Rxo = require('rxjs/operators')
 const { bufferWhile } = require('../helpers/operators')
 const { defaults, concat, lens } = require('../helpers/link')
@@ -15,5 +15,5 @@ module.exports = [
     R.apply(R.equals),
     R.unapply(R.map(R.view(lens.href)))
   )),
-  Rxo.map(R.reduce(concat, defaults)),
+  Rxo.map(R.reduce(concat, defaults))
 ]

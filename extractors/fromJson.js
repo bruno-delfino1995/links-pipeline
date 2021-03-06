@@ -1,4 +1,3 @@
-const R = require('ramda');
 const Rx = require('rxjs')
 const Rxo = require('rxjs/operators')
 

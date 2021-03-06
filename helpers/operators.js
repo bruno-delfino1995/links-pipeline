@@ -1,10 +1,10 @@
-const R = require('ramda');
+const R = require('ramda')
 const Rx = require('rxjs')
 const Rxo = require('rxjs/operators')
 
 const [
   INIT, NEXT, ERROR, COMPLETE
-] = Array(4).fill().map(() => Symbol())
+] = ['INIT', 'NEXT', 'ERROR', 'COMPLETE'].map((desc) => Symbol(desc))
 
 const bufferWhile = (criteria) => (source) => {
   return source.pipe(
@@ -14,49 +14,49 @@ const bufferWhile = (criteria) => (source) => {
         const { type, payload } = notification.do(
           (value) => ({ type: NEXT, payload: value }),
           (err) => ({ type: ERROR, payload: err }),
-          () => ({ type: COMPLETE }),
+          () => ({ type: COMPLETE })
         )
 
         switch (type) {
-        case ERROR:
-          return {
-            previous,
-            buffer,
-            report: [
-              Rx.Notification.createError(payload)
-            ]
-          }
-        case COMPLETE:
-          return {
-            previous,
-            buffer: [],
-            report: [
-              Rx.Notification.createNext(buffer),
-              Rx.Notification.createComplete()
-            ]
-          }
-        case NEXT:
-          if (previous === INIT) {
+          case ERROR:
+            return {
+              previous,
+              buffer,
+              report: [
+                Rx.Notification.createError(payload)
+              ]
+            }
+          case COMPLETE:
+            return {
+              previous,
+              buffer: [],
+              report: [
+                Rx.Notification.createNext(buffer),
+                Rx.Notification.createComplete()
+              ]
+            }
+          case NEXT:
+            if (previous === INIT) {
+              return {
+                previous: payload,
+                buffer: [payload],
+                report: []
+              }
+            }
+
+            if (!criteria(previous, payload)) {
+              return {
+                previous: payload,
+                buffer: [payload],
+                report: [Rx.Notification.createNext(buffer)]
+              }
+            }
+
             return {
               previous: payload,
-              buffer: [payload],
+              buffer: buffer.concat(payload),
               report: []
             }
-          }
-
-          if (!criteria(previous, payload)) {
-            return {
-              previous: payload,
-              buffer: [payload],
-              report: [Rx.Notification.createNext(buffer)]
-            }
-          }
-
-          return {
-            previous: payload,
-            buffer: buffer.concat(payload),
-            report: []
-          }
         }
       },
       { previous: INIT, buffer: [], report: [] }
@@ -67,5 +67,5 @@ const bufferWhile = (criteria) => (source) => {
 }
 
 module.exports = {
-  bufferWhile,
+  bufferWhile
 }

@@ -12,8 +12,8 @@ yargs
     visit: (pipeline) => ({
       ...pipeline,
       handler: (argv) => toStdio(pipeline.handler(argv))
-    }),
+    })
   })
   .demandCommand()
   .help()
-  .argv
+  .parse(process.argv.slice(2))

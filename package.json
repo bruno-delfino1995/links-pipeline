@@ -11,6 +11,9 @@
     "/bin",
     "/src"
   ],
+  "scripts": {
+    "lint": "standard"
+  },
   "dependencies": {
     "@postlight/mercury-parser": "^2.2.0",
     "axios": "^0.21.1",
@@ -24,6 +27,9 @@
     "rxjs": "^6.5.5",
     "url-parse": "^1.4.3",
     "yargs": "^15.3.1"
+  },
+  "devDependencies": {
+    "standard": "^16.0.3"
   },
   "engines": {
     "node": "^12.16.0",

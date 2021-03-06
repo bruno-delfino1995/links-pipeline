@@ -1,5 +1,3 @@
-const { normalize } = require('path')
-const path = require('path')
 const R = require('ramda')
 
 const fromJsonl = require('../extractors/fromJsonl')
@@ -27,7 +25,7 @@ module.exports = {
       desc: 'Module name for transformer',
       type: 'string',
       demandOption: true,
-      default: normalizeTransformers,
+      default: normalizeTransformers
     })
   },
   handler: (argv) => {

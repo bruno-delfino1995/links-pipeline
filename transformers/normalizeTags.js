@@ -1,7 +1,7 @@
-const R = require('ramda');
+const R = require('ramda')
 const Rxo = require('rxjs/operators')
 
-const tagsLens = R.lensProp('tags');
+const tagsLens = R.lensProp('tags')
 
 const main = R.over(tagsLens, R.compose(
   R.reject(R.isEmpty),

@@ -1,9 +1,9 @@
-const R = require('ramda');
+const R = require('ramda')
 const Rxo = require('rxjs/operators')
-const { matchDomain } = require('../helpers/href');
+const { matchDomain } = require('../helpers/href')
 
-const hrefLens = R.lensProp('href');
-const kindLens = R.lensProp('kind');
+const hrefLens = R.lensProp('href')
+const kindLens = R.lensProp('kind')
 
 const getKind = R.cond([
   [matchDomain(/(www\.)?google\.com\..*/), R.always('#search')],
@@ -11,7 +11,7 @@ const getKind = R.cond([
   [matchDomain(/reddit\.com/), R.always('com.reddit#post')],
   [matchDomain(/github\.com/), R.always('com.github#repository')],
   [R.T, R.always('#site')]
-]);
+])
 
 const main = R.when(
   R.compose(R.isNil, R.view(kindLens)),

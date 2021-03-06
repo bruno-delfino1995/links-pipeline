@@ -1,8 +1,8 @@
-const R = require('ramda');
+const R = require('ramda')
 const Rxo = require('rxjs/operators')
-const { matchDomain } = require('../helpers/href');
+const { matchDomain } = require('../helpers/href')
 
-const hrefLens = R.lensProp('href');
+const hrefLens = R.lensProp('href')
 
 const removeUselessSites = R.anyPass([
   matchDomain(/messenger\.com/),
@@ -10,8 +10,8 @@ const removeUselessSites = R.anyPass([
   matchDomain(/rally1\.rallydev\.com/),
   matchDomain(/web\.whatsapp\.com/),
   matchDomain(/web\.telegram\.org/)
-]);
+])
 
-const main = R.complement(R.compose(removeUselessSites, R.view(hrefLens)));
+const main = R.complement(R.compose(removeUselessSites, R.view(hrefLens)))
 
 module.exports = [Rxo.filter(main)]
