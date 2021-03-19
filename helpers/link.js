@@ -1,7 +1,14 @@
 const R = require('ramda')
 
 // defaults :: Link
-const defaults = { href: '', kind: '', tags: [], title: '', body: '' }
+const defaults = {
+  href: '',
+  kind: '',
+  title: '',
+  body: '',
+  tags: [],
+  hits: 1
+}
 
 const lens = R.compose(
   R.fromPairs,
@@ -9,26 +16,42 @@ const lens = R.compose(
   R.toPairs
 )(defaults)
 
-// merge :: String -> a -> a -> a
-const merge = R.unapply(R.converge(R.defaultTo, [R.nth(1), R.nth(2)]))
+const mergeNumber = R.unapply(R.compose(
+  R.reduce(R.add, 0),
+  R.drop(1)
+))
 
-// mergeTags :: String -> [a] -> [a] -> [a]
-const mergeTags = R.unapply(R.compose(R.uniq, R.apply(R.concat), R.drop(1)))
+const mergeString = R.unapply(R.compose(
+  R.defaultTo(''),
+  R.head(),
+  R.reject(R.anyPass([R.isEmpty, R.isNil])),
+  R.reverse,
+  R.drop(1)
+))
+
+const mergeArray = R.unapply(R.compose(
+  R.uniq,
+  R.apply(R.concat),
+  R.drop(1)
+))
 
 // concat :: Link -> Link -> Link
 const concat = R.mergeDeepWithKey(
   R.cond([
-    [R.equals('tags'), mergeTags],
-    [R.T, merge]
+    [R.equals('hits'), mergeNumber],
+    [R.equals('tags'), mergeArray],
+    [R.T, mergeString]
   ])
 )
 
-// clean :: Object -> Link
-const clean = R.pick(R.keys(defaults))
+// fromObject :: Object -> Link
+const fromObject = R.compose(
+  concat(defaults),
+  R.pick(R.keys(defaults))
+)
 
 module.exports = {
-  defaults,
-  clean,
+  fromObject,
   concat,
   lens
 }

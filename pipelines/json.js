@@ -1,4 +1,6 @@
 const path = require('path')
+const R = require('ramda')
+const Rxo = require('rxjs/operators')
 
 const fromJson = require('../extractors/fromJson')
 
@@ -15,5 +17,6 @@ module.exports = {
     const file = path.resolve(argv.file)
 
     return fromJson(file)
+      .pipe(Rxo.mergeMap(R.identity))
   }
 }
