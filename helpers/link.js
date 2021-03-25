@@ -1,5 +1,7 @@
 const R = require('ramda')
 
+const { isUseless } = require('./predicates')
+
 // defaults :: Link
 const defaults = {
   href: '',
@@ -24,7 +26,7 @@ const mergeNumber = R.unapply(R.compose(
 const mergeString = R.unapply(R.compose(
   R.defaultTo(''),
   R.head(),
-  R.reject(R.anyPass([R.isEmpty, R.isNil])),
+  R.reject(isUseless),
   R.reverse,
   R.drop(1)
 ))

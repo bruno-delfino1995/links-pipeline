@@ -3,13 +3,12 @@ const R = require('ramda')
 const fromJsonl = require('../extractors/fromJsonl')
 
 const normalizeTransformers = [
-  'cleanup',
+  'normalize',
   'removeByDomain',
   'resolveAMPProject',
   'removeTrackingParams',
   'addKind',
   'customizeSearch',
-  'normalizeTags',
   'sort',
   'uniq'
 ]

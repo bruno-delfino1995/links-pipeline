@@ -1,0 +1,19 @@
+const R = require('ramda')
+const Rxo = require('rxjs/operators')
+
+const { fromObject } = require('../helpers/link')
+const { isUseless } = require('../helpers/predicates')
+
+const main = R.evolve({
+  tags: R.compose(
+    R.map(R.trim),
+    R.reject(isUseless),
+    R.chain(R.split(',')),
+    R.map(R.toLower)
+  )
+})
+
+module.exports = [
+  Rxo.map(fromObject),
+  Rxo.map(main)
+]

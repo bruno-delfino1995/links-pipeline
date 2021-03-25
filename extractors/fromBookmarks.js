@@ -5,7 +5,7 @@ const cheerio = require('cheerio')
 
 const fromFile = require('./fromFile')
 
-const getEntry = R.map(el => ({ href: el.attr('href'), title: el.text(), tags: el.attr('tags') }))
+const getData = el => ({ href: el.attr('href'), title: el.text(), tags: el.attr('tags') })
 const getFolder = el => el.prev('dt > h3')
 
 const toArray = ($, list) => {
@@ -19,37 +19,40 @@ const toArray = ($, list) => {
   return arr
 }
 
-const extractBookmarks = $ => dom => {
-  const parents = toArray($, dom.parents())
-  const folders = R.map(getFolder, parents)
-  const folderTitles = R.reverse(
-    R.map(el => el.text(), [...toArray($, getFolder(dom)), ...folders])
+const extractLinks = $ => dom => {
+  const path = R.compose(
+    R.map(el => el.text()),
+    R.concat(toArray($, getFolder(dom))),
+    R.map(getFolder)
+  )(toArray($, dom.parents()))
+
+  const entries = R.map(
+    getData,
+    toArray($, dom.find('> dt > a'))
   )
 
-  const path = R.reject(R.isEmpty, folderTitles)
+  return R.map(
+    R.evolve({
+      tags: R.compose(
+        R.concat(path),
+        R.split(','),
+        R.defaultTo('')
+      )
+    }),
+    entries
+  )
+}
 
-  const elements = toArray($, dom.find('> dt > a'))
-  const entries = getEntry(elements)
+const convert = data => {
+  const $ = cheerio.load(data)
 
-  return R.map(entry => ({ path, ...entry }), entries)
+  const sessions = toArray($, $('dl'))
+  const links = R.chain(extractLinks($), sessions)
+
+  return Rx.from(links)
 }
 
 const main = path => fromFile(path)
-  .pipe(Rxo.mergeMap(data => {
-    const $ = cheerio.load(data)
-
-    const sessions = toArray($, $('dl'))
-    const bookmarks = R.compose(R.flatten, R.map(extractBookmarks($)))(sessions)
-
-    const links = R.map(({ path, tags, ...rest }) => ({
-      tags: R.reject(
-        R.anyPass([R.isNil, R.isEmpty]),
-        R.concat(path || [], R.split(',', tags || ''))
-      ),
-      ...rest
-    }))(bookmarks)
-
-    return Rx.from(links)
-  }))
+  .pipe(Rxo.mergeMap(convert))
 
 module.exports = main
