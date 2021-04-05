@@ -9,7 +9,7 @@ const defaults = {
   title: '',
   body: '',
   tags: [],
-  hits: 1
+  hits: 0
 }
 
 const lens = R.compose(
@@ -48,6 +48,7 @@ const concat = R.mergeDeepWithKey(
 
 // fromObject :: Object -> Link
 const fromObject = R.compose(
+  R.over(lens.hits, R.when(R.equals(0), R.always(1))),
   concat(defaults),
   R.pick(R.keys(defaults))
 )
