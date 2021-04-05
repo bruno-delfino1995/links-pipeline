@@ -61,11 +61,26 @@ const bufferWhile = (criteria) => (source) => {
       },
       { previous: INIT, buffer: [], report: [] }
     ),
-    Rxo.flatMap(R.prop('report')),
+    Rxo.concatMap(R.prop('report')),
     Rxo.dematerialize()
   )
 }
 
+const byLine = (source) => {
+  return source.pipe(
+    Rxo.scan(
+      ({ buffer }, b) => {
+        const splitted = buffer.concat(b).split('\n')
+        const rest = splitted.pop()
+        return { buffer: rest, items: splitted }
+      },
+      { buffer: '', items: [] }
+    ),
+    Rxo.concatMap(({ items }) => items)
+  )
+}
+
 module.exports = {
-  bufferWhile
+  bufferWhile,
+  byLine
 }
