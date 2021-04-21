@@ -9,6 +9,7 @@ const defaults = {
   title: '',
   body: '',
   tags: [],
+  sources: [],
   hits: 0
 }
 
@@ -42,6 +43,7 @@ const concat = R.mergeDeepWithKey(
   R.cond([
     [R.equals('hits'), mergeNumber],
     [R.equals('tags'), mergeArray],
+    [R.equals('sources'), mergeArray],
     [R.T, mergeString]
   ])
 )
