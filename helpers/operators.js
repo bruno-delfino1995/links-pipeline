@@ -54,7 +54,7 @@ const bufferWhile = (criteria) => (source) => {
 
             return {
               previous: payload,
-              buffer: buffer.concat(payload),
+              buffer: R.append(payload, buffer),
               report: []
             }
         }

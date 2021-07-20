@@ -9,7 +9,6 @@ const normalizeTransformers = [
   'removeTrackingParams',
   'addKind',
   'customizeSearch',
-  'sort',
   'uniq'
 ]
 
