@@ -1,58 +1,51 @@
 const R = require('ramda')
 const Rx = require('rxjs')
 const Rxo = require('rxjs/operators')
-const cheerio = require('cheerio')
+const parser = require('bookmark-parser')
 
-const fromFile = require('./fromFile')
+const expand = ({path, bookmark}) => {
+  const { type, children, name } = bookmark
 
-const getData = el => ({ href: el.attr('href'), title: el.text(), tags: el.attr('tags') })
-const getFolder = el => el.prev('dt > h3')
-
-const toArray = ($, list) => {
-  const arr = []
-
-  list.map((i, el) => {
-    arr.push($(el))
-    return el
-  })
-
-  return arr
+  if (type !== 'folder') {
+    return Rx.EMPTY
+  } else {
+    return Rx.from(children)
+      .pipe(Rxo.map(bk => ({path: R.append(name, path), bookmark: bk})))
+  }
 }
 
-const extractLinks = $ => dom => {
-  const path = R.compose(
-    R.map(el => el.text()),
-    R.concat(toArray($, getFolder(dom))),
-    R.map(getFolder)
-  )(toArray($, dom.parents()))
+const clean = R.evolve({
+  bookmark: R.pick(['name', 'url', 'tags'])
+})
 
-  const entries = R.map(
-    getData,
-    toArray($, dom.find('> dt > a'))
-  )
+const toLink = ({path, bookmark}) => {
+  const {name, tags, url} = bookmark
 
-  return R.map(
-    R.evolve({
-      tags: R.compose(
-        R.concat(path),
-        R.split(','),
-        R.defaultTo('')
-      )
-    }),
-    entries
-  )
+  return {
+    title: name,
+    tags: R.compose(
+      R.concat(path),
+      R.split(','),
+      R.defaultTo('')
+    )(tags),
+    href: url
+  }
 }
 
-const convert = data => {
-  const $ = cheerio.load(data)
+const isBookmark = ({bookmark}) => bookmark.type == 'bookmark'
 
-  const sessions = toArray($, $('dl'))
-  const links = R.chain(extractLinks($), sessions)
+const convert = bookmarks => {
+  [{children}] = R.values(bookmarks)
 
-  return Rx.from(links)
+  return Rx.from(children)
+    .pipe(Rxo.map(bk => ({path: [], bookmark: bk})))
+    .pipe(Rxo.expand(expand))
+    .pipe(Rxo.filter(isBookmark))
+    .pipe(Rxo.map(clean))
+    .pipe(Rxo.map(toLink))
 }
 
-const main = path => fromFile(path)
+const main = path => Rx.from(parser.readFromHTMLFile(path))
   .pipe(Rxo.mergeMap(convert))
 
 module.exports = main

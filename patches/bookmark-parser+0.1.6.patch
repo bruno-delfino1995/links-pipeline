@@ -1,0 +1,14 @@
+diff --git a/node_modules/bookmark-parser/lib/bookmark_parser/html_parser.js b/node_modules/bookmark-parser/lib/bookmark_parser/html_parser.js
+index 7817f83..e4fa922 100644
+--- a/node_modules/bookmark-parser/lib/bookmark_parser/html_parser.js
++++ b/node_modules/bookmark-parser/lib/bookmark_parser/html_parser.js
+@@ -70,7 +70,8 @@ module.exports = fileStream => {
+         url: tmp['A']['HREF'],
+         id: `${idQueue.join('-')}-${++subId}`,
+         iconUri: tmp['A']['ICON_URI'],
+-        icon: tmp['A']['ICON']
++        icon: tmp['A']['ICON'],
++        tags: tmp['A']['TAGS']
+       });
+       latestNode = currentNode.children[currentNode.children.length - 1];
+     }

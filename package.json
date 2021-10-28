@@ -12,16 +12,18 @@
     "/src"
   ],
   "scripts": {
+    "postinstall": "patch-package",
     "lint": "standard"
   },
   "dependencies": {
-    "@postlight/mercury-parser": "^2.2.0",
+    "@postlight/mercury-parser": "^2.2.1",
     "axios": "^0.21.2",
     "bluebird": "^3.5.1",
+    "bookmark-parser": "^0.1.6",
     "chalk": "^4.0.0",
-    "cheerio": "^1.0.0-rc.3",
     "cwait": "^1.1.1",
     "is-stream": "^2.0.0",
+    "patch-package": "^6.4.7",
     "query-string": "^6.1.0",
     "ramda": "^0.26.1",
     "rxjs": "^6.5.5",
@@ -29,7 +31,7 @@
     "yargs": "^15.3.1"
   },
   "devDependencies": {
-    "standard": "^16.0.3"
+    "standard": "^16.0.4"
   },
   "engines": {
     "node": "^12.16.0",
