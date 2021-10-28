@@ -53,7 +53,14 @@ const fromObject = R.compose(
   R.pick(R.keys(defaults))
 )
 
+// fromString :: String -> Link
+const fromString = R.compose(
+  fromObject,
+  link => ({ href: link })
+)
+
 module.exports = {
+  fromString,
   fromObject,
   concat,
   lens

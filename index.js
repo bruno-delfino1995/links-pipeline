@@ -2,6 +2,7 @@ const yargs = require('yargs')
 
 const pkg = require('./package.json')
 const toStdio = require('./loaders/toStdio')
+const normalize = require('./transformers/normalize')
 
 yargs
   .scriptName('links-from')
@@ -13,6 +14,7 @@ yargs
       ...pipeline,
       handler: (argv) => {
         const observable = pipeline.handler(argv)
+          .pipe(...normalize)
 
         return toStdio(observable)
       }
