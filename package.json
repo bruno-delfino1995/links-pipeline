@@ -27,7 +27,7 @@
     "query-string": "^6.1.0",
     "ramda": "^0.26.1",
     "rxjs": "^6.5.5",
-    "url-parse": "^1.5.2",
+    "url-parse": "^1.5.6",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
