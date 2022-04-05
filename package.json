@@ -3,7 +3,7 @@
   "description": "Collection of scripts to help managing saved links",
   "version": "0.0.1",
   "license": "MIT",
-  "main": "index.js",
+  "main": "src/index.js",
   "bin": {
     "links-from": "./bin/run"
   },

@@ -1,6 +1,6 @@
 const yargs = require('yargs')
 
-const pkg = require('./package.json')
+const pkg = require('../package.json')
 const toStdio = require('./loaders/toStdio')
 const normalize = require('./transformers/normalize')
 
