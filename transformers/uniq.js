@@ -12,7 +12,7 @@ const intoArray = R.converge(R.concat, [
   R.identity,
   R.compose(
     Array.of,
-    R.unapply(R.nth(1))
+    R.nthArg(1)
   )
 ])
 
