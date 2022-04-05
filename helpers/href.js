@@ -12,11 +12,6 @@ const matchDomain = R.curry((regex, href) =>
   )(href)
 )
 
-const getQuery = R.curry((name, href) =>
-  R.compose(R.prop(name), qs.parse, R.prop('query'), urlParse)(href)
-)
-
 module.exports = {
-  matchDomain,
-  getQuery
+  matchDomain
 }

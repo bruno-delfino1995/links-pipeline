@@ -4,11 +4,9 @@ const fromJsonl = require('../extractors/fromJsonl')
 
 const normalizeTransformers = [
   'normalize',
-  'removeByDomain',
-  'addKind',
-  'customizeSearch',
-  'uniq'
+  'no-domain',
   'resolve',
+  'with-kind',
 ]
 
 module.exports = {
@@ -22,7 +20,8 @@ module.exports = {
       desc: 'Module name for transformer',
       type: 'string',
       demandOption: true,
-      default: normalizeTransformers
+      default: normalizeTransformers,
+      defaultDescription: "normalization pipeline",
     })
   },
   handler: (argv) => {
