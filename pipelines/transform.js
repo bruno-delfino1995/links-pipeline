@@ -5,11 +5,10 @@ const fromJsonl = require('../extractors/fromJsonl')
 const normalizeTransformers = [
   'normalize',
   'removeByDomain',
-  'resolveAMPProject',
-  'removeTrackingParams',
   'addKind',
   'customizeSearch',
   'uniq'
+  'resolve',
 ]
 
 module.exports = {

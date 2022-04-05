@@ -16,11 +16,11 @@
     "lint": "standard"
   },
   "dependencies": {
-    "@postlight/mercury-parser": "^2.2.1",
     "axios": "^0.21.2",
     "bluebird": "^3.5.1",
     "bookmark-parser": "^0.1.6",
     "chalk": "^4.0.0",
+    "cheerio": "^1.0.0-rc.10",
     "cwait": "^1.1.1",
     "is-stream": "^2.0.0",
     "patch-package": "^6.4.7",
@@ -34,8 +34,8 @@
     "standard": "^16.0.4"
   },
   "engines": {
-    "node": "^12.16.0",
-    "npm": "^6.14.0"
+    "node": "^16.13.2",
+    "npm": "^8.1.2"
   },
   "repository": {
     "type": "git",

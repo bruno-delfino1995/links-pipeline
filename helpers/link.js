@@ -9,7 +9,8 @@ const defaults = {
   title: '',
   body: '',
   tags: [],
-  hits: 0
+  hits: 0,
+  alive: true
 }
 
 const lens = R.compose(
