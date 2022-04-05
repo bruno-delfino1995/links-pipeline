@@ -25,10 +25,11 @@ module.exports = {
     })
   },
   handler: (argv) => {
-    const pipes = R.flatten(R.map(
-      (name) => require(`../transformers/${name}`),
-      argv.transformer
-    ))
+    const pipes = R.compose(
+      R.flatten,
+      R.map(name => require(`../transformers/${name}`)),
+    )(argv.transformer)
+
 
     return fromJsonl(process.stdin)
       .pipe(...pipes)

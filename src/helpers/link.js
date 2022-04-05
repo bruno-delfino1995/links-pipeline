@@ -10,7 +10,8 @@ const defaults = {
   body: '',
   tags: [],
   hits: 0,
-  alive: true
+  alive: false,
+  resolved: false,
 }
 
 const lens = R.compose(
@@ -38,11 +39,19 @@ const mergeArray = R.unapply(R.compose(
   R.drop(1)
 ))
 
+const mergeBoolean = R.unapply(R.compose(
+  R.defaultTo(false),
+  R.apply(R.or),
+  R.drop(1)
+))
+
 // concat :: Link -> Link -> Link
 const concat = R.mergeDeepWithKey(
   R.cond([
     [R.equals('hits'), mergeNumber],
     [R.equals('tags'), mergeArray],
+    [R.equals('resolved'), mergeBoolean],
+    [R.equals('alive'), mergeBoolean],
     [R.T, mergeString]
   ])
 )

@@ -9,8 +9,10 @@ const { lens } = require('../helpers/link')
 const { isUseful } = require('../helpers/predicates')
 
 const augment = async link => {
+  const href = R.view(lens.href, link)
+
   return axios
-    .get(R.view(lens.href, link))
+    .get(href, { timeout: 5000 })
     .then(resp => {
       const $ = cheerio.load(resp.data)
 
@@ -32,9 +34,18 @@ const augment = async link => {
       )(link)
     })
     .catch(_ => R.set(lens.alive, false, link))
+    .then(R.set(lens.resolved, true))
 }
 
 const queue = new TaskQueue(Promise, 16)
-const main = queue.wrap(augment)
+const enhance = queue.wrap(augment)
 
-module.exports = [Rxo.mergeMap(main)]
+const main = R.ifElse(
+  R.view(lens.resolved),
+  Promise.resolve,
+  enhance
+)
+
+module.exports = [
+  Rxo.mergeMap(main),
+]
