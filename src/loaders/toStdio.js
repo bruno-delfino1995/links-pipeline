@@ -1,3 +1,4 @@
+const Rx = require('rxjs')
 const chalk = require('chalk')
 
 const main = (observable) => {
@@ -6,7 +7,7 @@ const main = (observable) => {
     error: err => console.error(`${chalk.red('Error:')} ${chalk.yellow(err)}`, err)
   })
 
-  return observable.toPromise().then((_) => Symbol('COMPLETED'))
+  return Rx.lastValueFrom(observable, { defaultValue: null }).then((_) => Symbol('COMPLETED'))
 }
 
 module.exports = main

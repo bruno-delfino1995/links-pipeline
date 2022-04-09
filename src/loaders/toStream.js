@@ -1,3 +1,4 @@
+const Rx = require('rxjs')
 const chalk = require('chalk')
 
 const main = (stream, observable) => {
@@ -7,7 +8,7 @@ const main = (stream, observable) => {
     complete: () => stream.end()
   })
 
-  return observable.toPromise().then((_) => Symbol('COMPLETED'))
+  return Rx.lastValueFrom(observable, { defaultValue: null }).then((_) => Symbol('COMPLETED'))
 }
 
 module.exports = main
