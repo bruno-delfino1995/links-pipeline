@@ -1,5 +1,4 @@
 const R = require('ramda')
-const qs = require('query-string')
 const urlParse = require('url-parse')
 
 const matchDomain = R.curry((regex, href) =>
@@ -12,6 +11,17 @@ const matchDomain = R.curry((regex, href) =>
   )(href)
 )
 
+const matchPath = R.curry((regex, href) =>
+  R.compose(
+    R.not,
+    R.isEmpty,
+    R.match(regex),
+    R.prop('pathname'),
+    urlParse
+  )(href)
+)
+
 module.exports = {
-  matchDomain
+  matchDomain,
+  matchPath
 }
