@@ -13,10 +13,13 @@ yargs
     visit: (pipeline) => ({
       ...pipeline,
       handler: (argv) => {
+        const subscriber = toStdio()
         const observable = pipeline.handler(argv)
           .pipe(...normalize)
 
-        return toStdio(observable)
+        observable.subscribe(subscriber)
+
+        return observable.toPromise()
       }
     })
   })

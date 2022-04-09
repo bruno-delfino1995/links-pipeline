@@ -5,7 +5,7 @@ const isStream = require('is-stream')
 const fromStream = require('./fromStream')
 const { byLine } = require('../helpers/operators')
 
-const fromLog = (path) => fromStream(
+const fromJsonl = (path) => fromStream(
   () => (isStream.readable(path)
     ? path
     : fs.createReadStream(path)
@@ -14,4 +14,4 @@ const fromLog = (path) => fromStream(
   .pipe(byLine)
   .pipe(Rxo.map(JSON.parse))
 
-module.exports = fromLog
+module.exports = fromJsonl
