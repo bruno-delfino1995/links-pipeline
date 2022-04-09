@@ -2,31 +2,61 @@ const R = require('ramda')
 const Rx = require('rxjs')
 const Rxo = require('rxjs/operators')
 
-const [
-  INIT, NEXT, ERROR, COMPLETE
-] = ['INIT', 'NEXT', 'ERROR', 'COMPLETE'].map((desc) => Symbol(desc))
+const kind = R.map(Symbol, { init: 'INIT', next: 'NEXT', error: 'ERROR', complete: 'COMPLETE' })
+
+const annotated = (...operator) => (source) => {
+  return source
+    .pipe(
+      Rxo.materialize(),
+      Rxo.scan(
+        ({ start }, notification) => {
+          const report = notification.do(
+            (value) => ({ type: (start ? kind.init : kind.next), payload: value }),
+            (err) => ({ type: kind.error, payload: err }),
+            () => ({ type: kind.complete, payload: null })
+          )
+
+          return {
+            start: false,
+            report
+          }
+        },
+        { start: true, report: null }
+      ),
+      Rxo.map(R.prop('report'))
+    )
+    .pipe(...operator)
+    .pipe(Rxo.dematerialize())
+}
 
 const bufferWhile = (criteria) => (source) => {
-  return source.pipe(
-    Rxo.materialize(),
+  return source.pipe(annotated(
     Rxo.scan(
-      ({ previous, buffer }, notification) => {
-        const { type, payload } = notification.do(
-          (value) => ({ type: NEXT, payload: value }),
-          (err) => ({ type: ERROR, payload: err }),
-          () => ({ type: COMPLETE })
-        )
-
+      ({ previous, buffer }, { type, payload }) => {
         switch (type) {
-          case ERROR:
+          case kind.init:
             return {
-              previous,
-              buffer,
-              report: [
-                Rx.Notification.createError(payload)
-              ]
+              previous: payload,
+              buffer: [payload],
+              report: []
             }
-          case COMPLETE:
+
+          case kind.next:
+            if (criteria(previous, payload)) {
+              return {
+                previous: payload,
+                buffer: R.append(payload, buffer),
+                report: []
+              }
+            }
+
+            return {
+              previous: payload,
+              buffer: [payload],
+              report: [Rx.Notification.createNext(buffer)]
+            }
+
+          case kind.complete:
             return {
               previous,
               buffer: [],
@@ -35,35 +65,21 @@ const bufferWhile = (criteria) => (source) => {
                 Rx.Notification.createComplete()
               ]
             }
-          case NEXT:
-            if (previous === INIT) {
-              return {
-                previous: payload,
-                buffer: [payload],
-                report: []
-              }
-            }
 
-            if (!criteria(previous, payload)) {
-              return {
-                previous: payload,
-                buffer: [payload],
-                report: [Rx.Notification.createNext(buffer)]
-              }
-            }
-
+          case kind.error:
             return {
-              previous: payload,
-              buffer: R.append(payload, buffer),
-              report: []
+              previous,
+              buffer,
+              report: [
+                Rx.Notification.createError(payload)
+              ]
             }
         }
       },
-      { previous: INIT, buffer: [], report: [] }
+      { previous: null, buffer: [], report: [] }
     ),
-    Rxo.concatMap(R.prop('report')),
-    Rxo.dematerialize()
-  )
+    Rxo.concatMap(R.prop('report'))
+  ))
 }
 
 const byLine = (source) => {
@@ -80,7 +96,18 @@ const byLine = (source) => {
   )
 }
 
+const withIndex = (source) => {
+  let index = 0
+
+  // TODO: Is there a way to use Rx.generate as the counter and merge both with
+  // Rxo.zipWith without overflowing the stack?
+  return source.pipe(Rxo.map(el => [el, index++]))
+}
+
 module.exports = {
+  kind,
+  annotated,
   bufferWhile,
-  byLine
+  byLine,
+  withIndex
 }

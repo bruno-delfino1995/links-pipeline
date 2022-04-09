@@ -4,7 +4,9 @@ const fromJsonl = require('../extractors/fromJsonl')
 
 const normalizeTransformers = [
   'normalize',
-  'no-domain'
+  'exclude',
+  'resolve',
+  'uniq'
 ]
 
 module.exports = {
