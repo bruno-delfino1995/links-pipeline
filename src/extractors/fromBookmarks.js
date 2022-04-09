@@ -35,7 +35,7 @@ const toLink = ({ path, bookmark }) => {
 const isBookmark = ({ bookmark }) => bookmark.type === 'bookmark'
 
 const convert = bookmarks => {
-  let [{ children }] = R.values(bookmarks)
+  const [{ children }] = R.values(bookmarks)
 
   return Rx.from(children)
     .pipe(Rxo.map(bk => ({ path: [], bookmark: bk })))
