@@ -7,7 +7,6 @@ const indexLens = R.lensIndex(1)
 const valueLens = R.lensIndex(0)
 const hrefLens = R.compose(valueLens, lens.href)
 
-
 const intoArray = R.converge(R.concat, [
   R.identity,
   R.compose(

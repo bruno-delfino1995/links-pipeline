@@ -4,9 +4,7 @@ const fromJsonl = require('../extractors/fromJsonl')
 
 const normalizeTransformers = [
   'normalize',
-  'no-domain',
-  'resolve',
-  'with-kind',
+  'no-domain'
 ]
 
 module.exports = {
@@ -21,15 +19,14 @@ module.exports = {
       type: 'string',
       demandOption: true,
       default: normalizeTransformers,
-      defaultDescription: "normalization pipeline",
+      defaultDescription: 'normalization pipeline'
     })
   },
   handler: (argv) => {
     const pipes = R.compose(
       R.flatten,
-      R.map(name => require(`../transformers/${name}`)),
+      R.map(name => require(`../transformers/${name}`))
     )(argv.transformer)
-
 
     return fromJsonl(process.stdin)
       .pipe(...pipes)

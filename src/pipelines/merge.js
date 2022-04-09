@@ -1,6 +1,5 @@
 const path = require('path')
 const R = require('ramda')
-const Rxo = require('rxjs/operators')
 const Rx = require('rxjs')
 
 const fromJsonl = require('../extractors/fromJsonl')
