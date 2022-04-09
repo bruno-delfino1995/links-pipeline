@@ -7,6 +7,7 @@ const hrefLens = R.lensProp('href')
 const isUselessSite = R.anyPass([
   matchDomain(/messenger\.com/),
   matchDomain(/google\.com/),
+  matchDomain(/localhost/),
   R.allPass([matchDomain(/ecosia\.org/), matchPath(/search/)]),
   matchDomain(/web\.whatsapp\.com/),
   matchDomain(/web\.telegram\.org/)
