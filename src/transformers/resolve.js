@@ -34,18 +34,17 @@ const augment = async link => {
       )(link)
     })
     .catch(_ => R.set(lens.alive, false, link))
-    .then(R.set(lens.resolved, true))
 }
 
 const queue = new TaskQueue(Promise, 16)
 const enhance = queue.wrap(augment)
 
 const main = R.ifElse(
-  R.view(lens.resolved),
+  R.view(lens.alive),
   Promise.resolve,
   enhance
 )
 
 module.exports = [
-  Rxo.mergeMap(main),
+  Rxo.mergeMap(main)
 ]

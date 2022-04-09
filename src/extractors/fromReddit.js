@@ -10,13 +10,11 @@ const elementsLens = R.lensPath(['data', 'children'])
 
 const convert = R.cond([
   [R.propEq('kind', 't3'), post => ({
-    kind: 'com.reddit#post',
     title: post.data.title,
     tags: [post.data.subreddit],
     href: `https://reddit.com${post.data.permalink}`
   })],
   [R.propEq('kind', 't1'), comment => ({
-    kind: 'com.reddit#comment',
     title: comment.data.body,
     tags: [comment.data.subreddit],
     href: `https://reddit.com${comment.data.permalink}`

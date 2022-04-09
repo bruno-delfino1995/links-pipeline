@@ -5,13 +5,9 @@ const { isUseless } = require('./predicates')
 // defaults :: Link
 const defaults = {
   href: '',
-  kind: '',
   title: '',
-  body: '',
   tags: [],
-  hits: 0,
-  alive: false,
-  resolved: false,
+  alive: false
 }
 
 const lens = R.compose(
@@ -19,11 +15,6 @@ const lens = R.compose(
   R.map(([k, _]) => [k, R.lensProp(k)]),
   R.toPairs
 )(defaults)
-
-const mergeNumber = R.unapply(R.compose(
-  R.reduce(R.add, 0),
-  R.drop(1)
-))
 
 const mergeString = R.unapply(R.compose(
   R.defaultTo(''),
@@ -48,9 +39,7 @@ const mergeBoolean = R.unapply(R.compose(
 // concat :: Link -> Link -> Link
 const concat = R.mergeDeepWithKey(
   R.cond([
-    [R.equals('hits'), mergeNumber],
     [R.equals('tags'), mergeArray],
-    [R.equals('resolved'), mergeBoolean],
     [R.equals('alive'), mergeBoolean],
     [R.T, mergeString]
   ])
@@ -58,7 +47,6 @@ const concat = R.mergeDeepWithKey(
 
 // fromObject :: Object -> Link
 const fromObject = R.compose(
-  R.over(lens.hits, R.when(R.equals(0), R.always(1))),
   concat(defaults),
   R.pick(R.keys(defaults))
 )
