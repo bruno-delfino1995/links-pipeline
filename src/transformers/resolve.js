@@ -2,59 +2,56 @@ const R = require('ramda')
 const Rxo = require('rxjs/operators')
 const Promise = require('bluebird')
 const { TaskQueue } = require('cwait')
-const axios = require('axios')
+const puppeteer = require('puppeteer');
 const cheerio = require('cheerio')
-const { Agent } = require('https')
-
 const { lens } = require('../helpers/link')
 const { isUseful } = require('../helpers/predicates')
 
-const httpsAgent = new Agent({
-  rejectUnauthorized: false
-})
+const userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.61 Safari/537.36 ArchiveBox/0.6.2'
+const concurrency = 8
 
-const augment = async link => {
-  const href = R.view(lens.href, link)
-  const opts = {
-    httpsAgent,
-    timeout: 300000,
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0'
-    }
+const queue = new TaskQueue(Promise, concurrency)
+const augment = queue.wrap(async (link) => {
+  const url = R.view(lens.href, link)
+
+  const browser = await puppeteer.launch({
+    args: [`--user-agent=${userAgent}`]
+  })
+
+  try {
+    const page = await browser.newPage()
+    await page.goto(url)
+    const contents = await page.content()
+
+    const $ = cheerio.load(contents)
+
+    const title = R.find(isUseful, [
+      $('head > title').text(),
+      R.view(lens.title, link)
+    ])
+
+    const href = R.find(isUseful, [
+      $("head > link[rel='canonical']").prop('href'),
+      R.view(lens.href, link)
+    ])
+
+    return R.compose(
+      R.set(lens.alive, true),
+      R.set(lens.href, href),
+      R.set(lens.title, title)
+    )(link)
+  } catch (e) {
+    console.error(e)
+    return R.set(lens.alive, false, link)
+  } finally {
+    await browser.close()
   }
-
-  return axios
-    .get(href, opts)
-    .then(resp => {
-      const $ = cheerio.load(resp.data)
-
-      const title = R.find(isUseful, [
-        $('head > title').text(),
-        R.view(lens.title, link)
-      ])
-
-      const href = R.find(isUseful, [
-        $("head > link[rel='canonical']").prop('href'),
-        resp.headers.location,
-        R.view(lens.href, link)
-      ])
-
-      return R.compose(
-        R.set(lens.alive, true),
-        R.set(lens.href, href),
-        R.set(lens.title, title)
-      )(link)
-    })
-    .catch(_ => R.set(lens.alive, false, link))
-}
-
-const queue = new TaskQueue(Promise, 16)
-const enhance = queue.wrap(augment)
+})
 
 const main = R.ifElse(
   R.view(lens.alive),
   Promise.resolve,
-  enhance
+  augment
 )
 
 module.exports = [

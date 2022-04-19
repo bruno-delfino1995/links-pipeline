@@ -24,6 +24,7 @@
     "cwait": "^1.1.1",
     "is-stream": "^2.0.0",
     "patch-package": "^6.4.7",
+    "puppeteer": "^13.5.2",
     "query-string": "^6.1.0",
     "ramda": "^0.26.1",
     "rxjs": "^7.5.5",
