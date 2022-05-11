@@ -1,6 +1,7 @@
 const path = require('path')
 
 const fromBookmarks = require('../extractors/fromBookmarks')
+const normalize = require('../transformers/normalize')
 
 module.exports = {
   command: 'bookmarks <file>',
@@ -15,5 +16,6 @@ module.exports = {
     const file = path.resolve(argv.file)
 
     return fromBookmarks(file)
+      .pipe(...normalize)
   }
 }

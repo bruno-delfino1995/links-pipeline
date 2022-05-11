@@ -4,6 +4,7 @@ const Rxo = require('rxjs/operators')
 const fromFile = require('../extractors/fromFile')
 const { byLine } = require('../helpers/operators')
 const { fromString } = require('../helpers/link')
+const normalize = require('../transformers/normalize')
 
 module.exports = {
   command: 'text <file>',
@@ -20,5 +21,6 @@ module.exports = {
     return fromFile(file)
       .pipe(byLine)
       .pipe(Rxo.map(fromString))
+      .pipe(...normalize)
   }
 }

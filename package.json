@@ -19,6 +19,7 @@
     "axios": "^0.21.2",
     "bluebird": "^3.5.1",
     "bookmark-parser": "^0.1.6",
+    "bookmarked": "^2.0.4",
     "chalk": "^4.0.0",
     "cheerio": "^1.0.0-rc.10",
     "cwait": "^1.1.1",

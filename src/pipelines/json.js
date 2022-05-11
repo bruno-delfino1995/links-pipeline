@@ -3,6 +3,7 @@ const R = require('ramda')
 const Rxo = require('rxjs/operators')
 
 const fromJson = require('../extractors/fromJson')
+const normalize = require('../transformers/normalize')
 
 module.exports = {
   command: 'json <file>',
@@ -18,5 +19,6 @@ module.exports = {
 
     return fromJson(file)
       .pipe(Rxo.mergeMap(R.identity))
+      .pipe(...normalize)
   }
 }

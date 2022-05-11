@@ -1,4 +1,5 @@
 const fromReddit = require('../extractors/fromReddit')
+const normalize = require('../transformers/normalize')
 
 module.exports = {
   command: 'reddit <username>',
@@ -19,9 +20,14 @@ module.exports = {
       default: false
     })
   },
-  handler: (argv) => fromReddit({
-    username: argv.username,
-    token: argv.token,
-    unsave: argv.unsave
-  })
+  handler: (argv) => {
+    const opts = {
+      username: argv.username,
+      token: argv.token,
+      unsave: argv.unsave
+    }
+
+    return fromReddit(opts)
+      .pipe(...normalize)
+  }
 }

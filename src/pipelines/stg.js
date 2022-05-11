@@ -1,6 +1,7 @@
 const path = require('path')
 
 const fromSimpleTabGroups = require('../extractors/fromSimpleTabGroups')
+const normalize = require('../transformers/normalize')
 
 module.exports = {
   command: 'stg <file>',
@@ -15,5 +16,6 @@ module.exports = {
     const file = path.resolve(argv.file)
 
     return fromSimpleTabGroups(file)
+      .pipe(...normalize)
   }
 }

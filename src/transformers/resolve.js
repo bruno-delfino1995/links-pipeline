@@ -2,7 +2,7 @@ const R = require('ramda')
 const Rxo = require('rxjs/operators')
 const Promise = require('bluebird')
 const { TaskQueue } = require('cwait')
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer')
 const cheerio = require('cheerio')
 const { lens } = require('../helpers/link')
 const { isUseful } = require('../helpers/predicates')
@@ -15,6 +15,7 @@ const augment = queue.wrap(async (link) => {
   const url = R.view(lens.href, link)
 
   const browser = await puppeteer.launch({
+    ignoreHTTPSErrors: true,
     args: [`--user-agent=${userAgent}`]
   })
 

@@ -3,7 +3,13 @@ const chalk = require('chalk')
 
 const main = (observable) => {
   observable.subscribe({
-    next: evt => console.log(JSON.stringify(evt)),
+    next: evt => {
+      if (typeof evt === 'string') {
+        console.log(evt)
+      } else {
+        console.log(JSON.stringify(evt))
+      }
+    },
     error: err => console.error(`${chalk.red('Error:')} ${chalk.yellow(err)}`, err)
   })
 
