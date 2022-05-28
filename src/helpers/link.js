@@ -1,13 +1,14 @@
 const R = require('ramda')
 
-const { isUseless } = require('./predicates')
+const { isUseless, isUseful } = require('./predicates')
 
 // defaults :: Link
 const defaults = {
   href: '',
   title: '',
   tags: [],
-  alive: false
+  error: null,
+  attempts: 0
 }
 
 const lens = R.compose(
@@ -30,9 +31,8 @@ const mergeArray = R.unapply(R.compose(
   R.drop(1)
 ))
 
-const mergeBoolean = R.unapply(R.compose(
-  R.defaultTo(false),
-  R.apply(R.or),
+const mergeInteger = R.unapply(R.compose(
+  R.sum,
   R.drop(1)
 ))
 
@@ -40,7 +40,7 @@ const mergeBoolean = R.unapply(R.compose(
 const concat = R.mergeDeepWithKey(
   R.cond([
     [R.equals('tags'), mergeArray],
-    [R.equals('alive'), mergeBoolean],
+    [R.equals('attempts'), mergeInteger],
     [R.T, mergeString]
   ])
 )
@@ -57,8 +57,19 @@ const fromString = R.compose(
   link => ({ href: link })
 )
 
+// toString :: Link -> String
+let toString = R.compose(
+  JSON.stringify,
+  R.when(
+    R.compose(R.equals(0), R.view(lens.attempts)),
+    R.omit(['attempts'])
+  ),
+  R.filter(isUseful)
+)
+
 module.exports = {
   fromString,
+  toString,
   fromObject,
   concat,
   lens

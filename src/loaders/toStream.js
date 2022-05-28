@@ -3,8 +3,14 @@ const Rxo = require('rxjs/operators')
 const chalk = require('chalk')
 
 const main = (stream, observable) => {
-  let last = observable.pipe(Rxo.tap({
-    next: evt => stream.write(`${JSON.stringify(evt)}\n`),
+  const last = observable.pipe(Rxo.tap({
+    next: evt => {
+      if (typeof evt === 'string') {
+        stream.write(`${evt}\n`)
+      } else {
+        stream.write(`${JSON.stringify(evt)}\n`)
+      }
+    },
     error: err => console.error(`${chalk.red('Error:')} ${chalk.yellow(err)}`, err),
     complete: () => stream.end()
   }))

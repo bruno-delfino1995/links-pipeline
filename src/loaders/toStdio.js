@@ -3,7 +3,7 @@ const Rxo = require('rxjs/operators')
 const chalk = require('chalk')
 
 const main = (observable) => {
-  let last = observable.pipe(Rxo.tap({
+  const last = observable.pipe(Rxo.tap({
     next: evt => {
       if (typeof evt === 'string') {
         console.log(evt)

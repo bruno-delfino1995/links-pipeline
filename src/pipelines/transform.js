@@ -1,6 +1,8 @@
 const R = require('ramda')
+const Rxo = require('rxjs/operators')
 
 const fromJsonl = require('../extractors/fromJsonl')
+const { fromObject } = require('../helpers/link')
 
 const normalizeTransformers = [
   'normalize',
@@ -31,6 +33,7 @@ module.exports = {
     )(argv.transformer)
 
     return fromJsonl(process.stdin)
+      .pipe(Rxo.map(fromObject))
       .pipe(...pipes)
   }
 }
