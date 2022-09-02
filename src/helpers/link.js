@@ -58,7 +58,7 @@ const fromString = R.compose(
 )
 
 // toString :: Link -> String
-let toString = R.compose(
+const toString = R.compose(
   JSON.stringify,
   R.when(
     R.compose(R.equals(0), R.view(lens.attempts)),

@@ -7,7 +7,7 @@ const normalize = require('../src/transformers/normalize')
 const { lens } = require('../src/helpers/link')
 const { matchDomain } = require('../src/helpers/href')
 
-const mapper = R.when(R.compose(matchDomain(/www\.amazon\.com/), R.view(lens.href)), R.set(lens.error, "Error: Manual Retry"))
+const mapper = R.when(R.compose(matchDomain(/www\.amazon\.com/), R.view(lens.href)), R.set(lens.error, 'Error: Manual Retry'))
 
 yargs
   .command({

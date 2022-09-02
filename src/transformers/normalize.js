@@ -1,7 +1,7 @@
 const R = require('ramda')
 const Rxo = require('rxjs/operators')
 
-const { fromObject, toString } = require('../helpers/link')
+const { fromObject } = require('../helpers/link')
 const { isUseless } = require('../helpers/predicates')
 
 const main = R.evolve({
@@ -16,6 +16,5 @@ const main = R.evolve({
 
 module.exports = [
   Rxo.map(fromObject),
-  Rxo.map(main),
-  Rxo.map(toString)
+  Rxo.map(main)
 ]

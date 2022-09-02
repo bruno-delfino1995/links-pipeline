@@ -35,10 +35,6 @@
   "devDependencies": {
     "standard": "^16.0.4"
   },
-  "engines": {
-    "node": "^16.13.2",
-    "npm": "^8.1.2"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/bruno-delfino1995/links-pipeline.git"
